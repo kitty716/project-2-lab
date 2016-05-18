@@ -1,565 +1,170 @@
-var hours = ['6:00am', '7:00am', '8:00am', '9:00am', '10:00am', '11:00am', '12:00pm', '1:00pm', '2:00pm', '3:00pm:', '4:00pm', '5:00pm', '6:00pm', '7:00pm', '8:00pm:'];
-//pikePlace
-var pikePlace = {
-  locationName: 'Pike Place Market',
-  minCustomersHour: 14,
-  maxCustomersHour: 35,
-  avgCupsPerCustomer: 1.2,
-  avgPoundsPerCustomer: 0.34,
-  totalBeansPerHour: [], // total = cupBean + packageBean
-  customersPerHour: [],
-  cupsPerHour: [],
-  beansNeededForCupsPerHour: [], //1 pound of beans makes 16 cups
-  poundPackagesPerHour: [],
-  empPerHour: [],
-  dailyCustomersTotal: 0,
-  dailyCupsTotal: 0,
-  dailyPoundPackagesTotal: 0,
-  dailyBeansNeededForCup: 0,
-  dailyBeansNeeded: 0,
+var hours = ['6:00am', '7:00am', '8:00am', '9:00am', '10:00am', '11:00am', '12:00pm', '1:00pm', '2:00pm', '3:00pm:', '4:00pm', '5:00pm', '6:00pm', '7:00pm', '8:00pm'];
 
-  calcCustomersPerHour: function(min,max) {
-    for (var i = 0; i < hours.length; i ++) {
-      var customers = Math.floor(Math.random() * (max - min + 1)) + min;
-      this.customersPerHour.push(customers);
-      this.dailyCustomersTotal += customers;
-    }
-    console.log(this.dailyCustomersTotal);
-  },
-  calcCupsPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var cups = this.avgCupsPerCustomer * this.customersPerHour[i];
-      cups = parseFloat(cups.toFixed(1));
-      this.cupsPerHour.push(cups);
-      this.dailyCupsTotal += cups;
-    }
-    console.log(this.dailyCupsTotal);
-  },
-  calcPoundPackagesPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var pounds = this.avgPoundsPerCustomer * this.customersPerHour[i];
-      pounds = parseFloat(pounds.toFixed(1));
-      this.poundPackagesPerHour.push(pounds);
-      this.dailyPoundPackagesTotal += pounds;
-    }
-    console.log(this.dailyPoundPackagesTotal);
-  },
-  calcBeansNeededForCupsPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var beanHour = this.cupsPerHour[i] / 16;
-      beanHour = parseFloat(beanHour.toFixed(1));
-      this.beansNeededForCupsPerHour.push(beanHour);
-      this.dailyBeansNeededForCup += beanHour;
-    }
-    console.log(this.dailyBeansNeededForCup);
-  },
-  //beansPerHour
-  calcTotalBeansPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var tBeanHour = this.poundPackagesPerHour[i] + this.beansNeededForCupsPerHour[i];
-      tBeanHour = parseFloat(tBeanHour.toFixed(1));
-      this.totalBeansPerHour.push(tBeanHour);
-      this.dailyBeansNeeded += tBeanHour;
-    }
-    console.log(this.dailyBeansNeeded);
-  },
-  //calcEmpPerHour not output yet !!!
-  calcEmpPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var emp = 2 * this.customersPerHour[i] / 60;
-      emp = Math.ceil(emp);
-      this.empPerHour.push(emp);
-    }
-    console.log(this.empPerHour);
-  },
-  render: function() {
-    // call all of the other methods that calc data
-    pikePlace.calcCustomersPerHour(pikePlace.minCustomersHour, pikePlace.maxCustomersHour);
-    pikePlace.calcCupsPerHour();
-    pikePlace.calcPoundPackagesPerHour();
-    pikePlace.calcBeansNeededForCupsPerHour();
-    pikePlace.calcTotalBeansPerHour();
-    pikePlace.calcEmpPerHour();
-
-    var ulElement = document.getElementById('pike');
-    for (var i = 0; i < hours.length; i++) {
-      // create a <li>
-      // give that <li> content
-      // append the <li> to the <ul>
-      var liElement = document.createElement('li');
-      liElement.textContent = hours[i] + ': ' + this.totalBeansPerHour[i] + ' lbs [' + this.customersPerHour[i] + ' customers, ' + this.cupsPerHour[i] + ' cups (' + this.beansNeededForCupsPerHour[i] + 'lbs), ' + this.poundPackagesPerHour[i] + ' lbs to-go]';
-      ulElement.appendChild(liElement);
-    }
-    // create a <li>
-    // give that <li> content
-    // append the <li> to the <ul>
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total customers at Pike Place Market: ' + this.dailyCustomersTotal;
-    ulElement.appendChild(liElement);
-
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total cups sold at Pike Place Market: ' + this.dailyCupsTotal.toFixed(1);
-    ulElement.appendChild(liElement);
-
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total pound packages sold at Pike Place Market: ' + this.dailyPoundPackagesTotal.toFixed(1);
-    ulElement.appendChild(liElement);
-
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total pounds of beans needed at Pike Place Market: ' + this.dailyBeansNeeded.toFixed(1);
-    ulElement.appendChild(liElement);
-  }
+var allKiosk = [];
+var allTotalbeanPerHour = [];
+var allTotalbean = 0;
+function kiosk(location, minCusHr, maxCusHr, avgCupPerCus, avgPoundPerCus){
+  this.localName = location;
+  this.minCustomersHour = minCusHr;
+  this.maxCustomersHour = maxCusHr;
+  this.avgCupsPerCustomer = avgCupPerCus;
+  this.avgPoundsPerCustomer = avgPoundPerCus;
+  this.customersPerHour = [];
+  this.cupsPerHour = [];
+  this.beansNeededForCupsPerHour = []; //1 pound of beans makes 16 cups
+  this.poundPackagesPerHour = [];
+  this.totalBeansPerHour = [];  //total = cupBean + packageBean
+  this.empPerHour = [];
+  this.dailyCustomersTotal = 0;
+  this.dailyCupsTotal = 0;
+  this.dailyPoundPackagesTotal = 0;
+  this.dailyBeansNeededForCup = 0;
+  this.dailyBeansNeeded = 0;  //total = cupBean + packageBean
+  this.dailyEmpHourTotal = 0;
+  allKiosk.push(this);
+  console.log(this);
 };
-pikePlace.render();
-
-//Capitol Hill
-var capitolHill = {
-  locationName: 'Capitol Hill',
-  minCustomersHour: 12,
-  maxCustomersHour: 28,
-  avgCupsPerCustomer: 3.2,
-  avgPoundsPerCustomer: 0.03,
-  totalBeansPerHour: [], // total = cupBean + packageBean
-  customersPerHour: [],
-  cupsPerHour: [],
-  beansNeededForCupsPerHour: [],
-  poundPackagesPerHour: [],
-  empPerHour: [],
-  dailyCustomersTotal: 0,
-  dailyCupsTotal: 0,
-  dailyPoundPackagesTotal: 0,
-  dailyBeansNeededForCup: 0,
-  dailyBeansNeeded: 0,
-
-  calcCustomersPerHour: function(min,max) {
-    for (var i = 0; i < hours.length; i ++) {
-      var customers = Math.floor(Math.random() * (max - min + 1)) + min;
-      this.customersPerHour.push(customers);
-      this.dailyCustomersTotal += customers;
-    }
-    console.log(this.dailyCustomersTotal);
-  },
-  calcCupsPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var cups = this.avgCupsPerCustomer * this.customersPerHour[i];
-      cups = parseFloat(cups.toFixed(1));
-      this.cupsPerHour.push(cups);
-      this.dailyCupsTotal += cups;
-    }
-    console.log(this.dailyCupsTotal);
-  },
-  calcPoundPackagesPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var pounds = this.avgPoundsPerCustomer * this.customersPerHour[i];
-      pounds = parseFloat(pounds.toFixed(1));
-      this.poundPackagesPerHour.push(pounds);
-      this.dailyPoundPackagesTotal += pounds;
-    }
-    console.log(this.dailyPoundPackagesTotal);
-  },
-  calcBeansNeededForCupsPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var beanHour = this.cupsPerHour[i] / 16;
-      beanHour = parseFloat(beanHour.toFixed(1));
-      this.beansNeededForCupsPerHour.push(beanHour);
-      this.dailyBeansNeededForCup += beanHour;
-    }
-    console.log(this.dailyBeansNeededForCup);
-  },
-  //beansPerHour
-  calcTotalBeansPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var tBeanHour = this.poundPackagesPerHour[i] + this.beansNeededForCupsPerHour[i];
-      tBeanHour = parseFloat(tBeanHour.toFixed(1));
-      this.totalBeansPerHour.push(tBeanHour);
-      this.dailyBeansNeeded += tBeanHour;
-    }
-    console.log(this.dailyBeansNeeded);
-  },
-  //calcEmpPerHour not output yet !!!
-  calcEmpPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var emp = 2 * this.customersPerHour[i] / 60;
-      emp = Math.ceil(emp);
-      this.empPerHour.push(emp);
-    }
-    console.log(this.empPerHour);
-  },
-  render: function() {
-    // call all of the other methods that calc data
-    capitolHill.calcCustomersPerHour(capitolHill.minCustomersHour, capitolHill.maxCustomersHour);
-    capitolHill.calcCupsPerHour();
-    capitolHill.calcPoundPackagesPerHour();
-    capitolHill.calcBeansNeededForCupsPerHour();
-    capitolHill.calcTotalBeansPerHour();
-    capitolHill.calcEmpPerHour();
-
-    var ulElement = document.getElementById('capitol');
-    for (var i = 0; i < hours.length; i++) {
-      // create a <li>
-      // give that <li> content
-      // append the <li> to the <ul>
-      var liElement = document.createElement('li');
-      liElement.textContent = hours[i] + ': ' + this.totalBeansPerHour[i] + ' lbs [' + this.customersPerHour[i] + ' customers, ' + this.cupsPerHour[i] + ' cups (' + this.beansNeededForCupsPerHour[i] + 'lbs), ' + this.poundPackagesPerHour[i] + ' lbs to-go]';
-      ulElement.appendChild(liElement);
-    }
-    // create a <li>
-    // give that <li> content
-    // append the <li> to the <ul>
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total customers at Capitol Hill: ' + this.dailyCustomersTotal;
-    ulElement.appendChild(liElement);
-
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total cups sold at Capitol Hill: ' + this.dailyCupsTotal.toFixed(1);
-    ulElement.appendChild(liElement);
-
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total pound packages sold at Capitol Hill: ' + this.dailyPoundPackagesTotal.toFixed(1);
-    ulElement.appendChild(liElement);
-
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total pounds of beans needed at Capitol Hill: ' + this.dailyBeansNeeded.toFixed(1);
-    ulElement.appendChild(liElement);
+kiosk.prototype.calcCustomersPerHour = function(min,max) {
+  for (var i = 0; i < hours.length; i ++) {
+    var customers = Math.floor(Math.random() * (max - min + 1)) + min;
+    this.customersPerHour.push(customers);
+    this.dailyCustomersTotal += customers;
   }
+  console.log('customersPerHour=' + this.customersPerHour);
+  console.log('dailyCustomersTotal=' + this.dailyCustomersTotal);
 };
-capitolHill.render();
-
-//Seattle Public Library
-var seattlePublicLibrary = {
-  locationName: 'Seattle Public Library',
-  minCustomersHour: 9,
-  maxCustomersHour: 45,
-  avgCupsPerCustomer: 2.6,
-  avgPoundsPerCustomer: 0.02,
-  totalBeansPerHour: [], // total = cupBean + packageBean
-  customersPerHour: [],
-  cupsPerHour: [],
-  beansNeededForCupsPerHour: [],
-  poundPackagesPerHour: [],
-  empPerHour: [],
-  dailyCustomersTotal: 0,
-  dailyCupsTotal: 0,
-  dailyPoundPackagesTotal: 0,
-  dailyBeansNeededForCup: 0,
-  dailyBeansNeeded: 0,
-
-  calcCustomersPerHour: function(min,max) {
-    for (var i = 0; i < hours.length; i ++) {
-      var customers = Math.floor(Math.random() * (max - min + 1)) + min;
-      this.customersPerHour.push(customers);
-      this.dailyCustomersTotal += customers;
-    }
-    console.log(this.dailyCustomersTotal);
-  },
-  calcCupsPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var cups = this.avgCupsPerCustomer * this.customersPerHour[i];
-      cups = parseFloat(cups.toFixed(1));
-      this.cupsPerHour.push(cups);
-      this.dailyCupsTotal += cups;
-    }
-    console.log(this.dailyCupsTotal);
-  },
-  calcPoundPackagesPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var pounds = this.avgPoundsPerCustomer * this.customersPerHour[i];
-      pounds = parseFloat(pounds.toFixed(1));
-      this.poundPackagesPerHour.push(pounds);
-      this.dailyPoundPackagesTotal += pounds;
-    }
-    console.log(this.dailyPoundPackagesTotal);
-  },
-  calcBeansNeededForCupsPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var beanHour = this.cupsPerHour[i] / 16;
-      beanHour = parseFloat(beanHour.toFixed(1));
-      this.beansNeededForCupsPerHour.push(beanHour);
-      this.dailyBeansNeededForCup += beanHour;
-    }
-    console.log(this.dailyBeansNeededForCup);
-  },
-  //beansPerHour
-  calcTotalBeansPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var tBeanHour = this.poundPackagesPerHour[i] + this.beansNeededForCupsPerHour[i];
-      tBeanHour = parseFloat(tBeanHour.toFixed(1));
-      this.totalBeansPerHour.push(tBeanHour);
-      this.dailyBeansNeeded += tBeanHour;
-    }
-    console.log(this.dailyBeansNeeded);
-  },
-  //calcEmpPerHour not output yet !!!
-  calcEmpPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var emp = 2 * this.customersPerHour[i] / 60;
-      emp = Math.ceil(emp);
-      this.empPerHour.push(emp);
-    }
-    console.log(this.empPerHour);
-  },
-  render: function() {
-    // call all of the other methods that calc data
-    seattlePublicLibrary.calcCustomersPerHour(seattlePublicLibrary.minCustomersHour, seattlePublicLibrary.maxCustomersHour);
-    seattlePublicLibrary.calcCupsPerHour();
-    seattlePublicLibrary.calcPoundPackagesPerHour();
-    seattlePublicLibrary.calcBeansNeededForCupsPerHour();
-    seattlePublicLibrary.calcTotalBeansPerHour();
-    seattlePublicLibrary.calcEmpPerHour();
-
-    var ulElement = document.getElementById('spl');
-    for (var i = 0; i < hours.length; i++) {
-      // create a <li>
-      // give that <li> content
-      // append the <li> to the <ul>
-      var liElement = document.createElement('li');
-      liElement.textContent = hours[i] + ': ' + this.totalBeansPerHour[i] + ' lbs [' + this.customersPerHour[i] + ' customers, ' + this.cupsPerHour[i] + ' cups (' + this.beansNeededForCupsPerHour[i] + 'lbs), ' + this.poundPackagesPerHour[i] + ' lbs to-go]';
-      ulElement.appendChild(liElement);
-    }
-    // create a <li>
-    // give that <li> content
-    // append the <li> to the <ul>
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total customers at Seattle Public Library: ' + this.dailyCustomersTotal;
-    ulElement.appendChild(liElement);
-
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total cups sold at Seattle Public Library: ' + this.dailyCupsTotal.toFixed(1);
-    ulElement.appendChild(liElement);
-
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total pound packages sold at Seattle Public Library: ' + this.dailyPoundPackagesTotal.toFixed(1);
-    ulElement.appendChild(liElement);
-
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total pounds of beans needed at Seattle Public Library: ' + this.dailyBeansNeeded.toFixed(1);
-    ulElement.appendChild(liElement);
+kiosk.prototype.calcCupsPerHour = function() {
+  for (var i = 0; i < hours.length; i ++) {
+    var cups = this.avgCupsPerCustomer * this.customersPerHour[i];
+    cups = parseFloat(cups.toFixed(1));
+    this.cupsPerHour.push(cups);
+    this.dailyCupsTotal += cups;
   }
+  console.log('cupsPerHour=' + this.cupsPerHour);
+  console.log('dailyCupsTotal=' + this.dailyCupsTotal);
 };
-seattlePublicLibrary.render();
-
-//South Lake Union
-var southLakeUnion = {
-  locationName: 'South Lake Union',
-  minCustomersHour: 5,
-  maxCustomersHour: 18,
-  avgCupsPerCustomer: 1.3,
-  avgPoundsPerCustomer: 0.04,
-  totalBeansPerHour: [], // total = cupBean + packageBean
-  customersPerHour: [],
-  cupsPerHour: [],
-  beansNeededForCupsPerHour: [],
-  poundPackagesPerHour: [],
-  empPerHour: [],
-  dailyCustomersTotal: 0,
-  dailyCupsTotal: 0,
-  dailyPoundPackagesTotal: 0,
-  dailyBeansNeededForCup: 0,
-  dailyBeansNeeded: 0,
-
-  calcCustomersPerHour: function(min,max) {
-    for (var i = 0; i < hours.length; i ++) {
-      var customers = Math.floor(Math.random() * (max - min + 1)) + min;
-      this.customersPerHour.push(customers);
-      this.dailyCustomersTotal += customers;
-    }
-    console.log(this.dailyCustomersTotal);
-  },
-  calcCupsPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var cups = this.avgCupsPerCustomer * this.customersPerHour[i];
-      cups = parseFloat(cups.toFixed(1));
-      this.cupsPerHour.push(cups);
-      this.dailyCupsTotal += cups;
-    }
-    console.log(this.dailyCupsTotal);
-  },
-  calcPoundPackagesPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var pounds = this.avgPoundsPerCustomer * this.customersPerHour[i];
-      pounds = parseFloat(pounds.toFixed(1));
-      this.poundPackagesPerHour.push(pounds);
-      this.dailyPoundPackagesTotal += pounds;
-    }
-    console.log(this.dailyPoundPackagesTotal);
-  },
-  calcBeansNeededForCupsPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var beanHour = this.cupsPerHour[i] / 16;
-      beanHour = parseFloat(beanHour.toFixed(1));
-      this.beansNeededForCupsPerHour.push(beanHour);
-      this.dailyBeansNeededForCup += beanHour;
-    }
-    console.log(this.dailyBeansNeededForCup);
-  },
-  //beansPerHour
-  calcTotalBeansPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var tBeanHour = this.poundPackagesPerHour[i] + this.beansNeededForCupsPerHour[i];
-      tBeanHour = parseFloat(tBeanHour.toFixed(1));
-      this.totalBeansPerHour.push(tBeanHour);
-      this.dailyBeansNeeded += tBeanHour;
-    }
-    console.log(this.dailyBeansNeeded);
-  },
-  //calcEmpPerHour not output yet !!!
-  calcEmpPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var emp = 2 * this.customersPerHour[i] / 60;
-      emp = Math.ceil(emp);
-      this.empPerHour.push(emp);
-    }
-    console.log(this.empPerHour);
-  },
-  render: function() {
-    // call all of the other methods that calc data
-    southLakeUnion.calcCustomersPerHour(southLakeUnion.minCustomersHour, southLakeUnion.maxCustomersHour);
-    southLakeUnion.calcCupsPerHour();
-    southLakeUnion.calcPoundPackagesPerHour();
-    southLakeUnion.calcBeansNeededForCupsPerHour();
-    southLakeUnion.calcTotalBeansPerHour();
-    southLakeUnion.calcEmpPerHour();
-
-    var ulElement = document.getElementById('slu');
-    for (var i = 0; i < hours.length; i++) {
-      // create a <li>
-      // give that <li> content
-      // append the <li> to the <ul>
-      var liElement = document.createElement('li');
-      liElement.textContent = hours[i] + ': ' + this.totalBeansPerHour[i] + ' lbs [' + this.customersPerHour[i] + ' customers, ' + this.cupsPerHour[i] + ' cups (' + this.beansNeededForCupsPerHour[i] + 'lbs), ' + this.poundPackagesPerHour[i] + ' lbs to-go]';
-      ulElement.appendChild(liElement);
-    }
-    // create a <li>
-    // give that <li> content
-    // append the <li> to the <ul>
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total customers at South Lake Union: ' + this.dailyCustomersTotal;
-    ulElement.appendChild(liElement);
-
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total cups sold at South Lake Union: ' + this.dailyCupsTotal.toFixed(1);
-    ulElement.appendChild(liElement);
-
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total pound packages sold at South Lake Union: ' + this.dailyPoundPackagesTotal.toFixed(1);
-    ulElement.appendChild(liElement);
-
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total pounds of beans needed at South Lake Union: ' + this.dailyBeansNeeded.toFixed(1);
-    ulElement.appendChild(liElement);
+kiosk.prototype.calcPoundPackagesPerHour = function() {
+  for (var i = 0; i < hours.length; i ++) {
+    var pounds = this.avgPoundsPerCustomer * this.customersPerHour[i];
+    pounds = parseFloat(pounds.toFixed(1));
+    this.poundPackagesPerHour.push(pounds);
+    this.dailyPoundPackagesTotal += pounds;
   }
+  console.log('poundPackagesPerHour=' + this.poundPackagesPerHour);
+  console.log('dailyPoundPackagesTotal=' + this.dailyPoundPackagesTotal);
 };
-southLakeUnion.render();
-
-//Sea-Tac Airport
-var seaTacAirport = {
-  locationName: 'Sea-Tac Airport',
-  minCustomersHour: 28,
-  maxCustomersHour: 44,
-  avgCupsPerCustomer: 1.1,
-  avgPoundsPerCustomer: 0.41,
-  totalBeansPerHour: [], // total = cupBean + packageBean
-  customersPerHour: [],
-  cupsPerHour: [],
-  beansNeededForCupsPerHour: [],
-  poundPackagesPerHour: [],
-  empPerHour: [],
-  dailyCustomersTotal: 0,
-  dailyCupsTotal: 0,
-  dailyPoundPackagesTotal: 0,
-  dailyBeansNeededForCup: 0,
-  dailyBeansNeeded: 0,
-
-  calcCustomersPerHour: function(min,max) {
-    for (var i = 0; i < hours.length; i ++) {
-      var customers = Math.floor(Math.random() * (max - min + 1)) + min;
-      this.customersPerHour.push(customers);
-      this.dailyCustomersTotal += customers;
-    }
-    console.log(this.dailyCustomersTotal);
-  },
-  calcCupsPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var cups = this.avgCupsPerCustomer * this.customersPerHour[i];
-      cups = parseFloat(cups.toFixed(1));
-      this.cupsPerHour.push(cups);
-      this.dailyCupsTotal += cups;
-    }
-    console.log(this.dailyCupsTotal);
-  },
-  calcPoundPackagesPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var pounds = this.avgPoundsPerCustomer * this.customersPerHour[i];
-      pounds = parseFloat(pounds.toFixed(1));
-      this.poundPackagesPerHour.push(pounds);
-      this.dailyPoundPackagesTotal += pounds;
-    }
-    console.log(this.dailyPoundPackagesTotal);
-  },
-  calcBeansNeededForCupsPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var beanHour = this.cupsPerHour[i] / 16;
-      beanHour = parseFloat(beanHour.toFixed(1));
-      this.beansNeededForCupsPerHour.push(beanHour);
-      this.dailyBeansNeededForCup += beanHour;
-    }
-    console.log(this.dailyBeansNeededForCup);
-  },
-  //beansPerHour
-  calcTotalBeansPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var tBeanHour = this.poundPackagesPerHour[i] + this.beansNeededForCupsPerHour[i];
-      tBeanHour = parseFloat(tBeanHour.toFixed(1));
-      this.totalBeansPerHour.push(tBeanHour);
-      this.dailyBeansNeeded += tBeanHour;
-    }
-    console.log(this.dailyBeansNeeded);
-  },
-  //calcEmpPerHour not output yet !!!
-  calcEmpPerHour: function() {
-    for (var i = 0; i < hours.length; i ++) {
-      var emp = 2 * this.customersPerHour[i] / 60;
-      emp = Math.ceil(emp);
-      this.empPerHour.push(emp);
-    }
-    console.log(this.empPerHour);
-  },
-  render: function() {
-    // call all of the other methods that calc data
-    seaTacAirport.calcCustomersPerHour(seaTacAirport.minCustomersHour, seaTacAirport.maxCustomersHour);
-    seaTacAirport.calcCupsPerHour();
-    seaTacAirport.calcPoundPackagesPerHour();
-    seaTacAirport.calcBeansNeededForCupsPerHour();
-    seaTacAirport.calcTotalBeansPerHour();
-    seaTacAirport.calcEmpPerHour();
-
-    var ulElement = document.getElementById('seatac');
-    for (var i = 0; i < hours.length; i++) {
-      // create a <li>
-      // give that <li> content
-      // append the <li> to the <ul>
-      var liElement = document.createElement('li');
-      liElement.textContent = hours[i] + ': ' + this.totalBeansPerHour[i] + ' lbs [' + this.customersPerHour[i] + ' customers, ' + this.cupsPerHour[i] + ' cups (' + this.beansNeededForCupsPerHour[i] + 'lbs), ' + this.poundPackagesPerHour[i] + ' lbs to-go]';
-      ulElement.appendChild(liElement);
-    }
-    // create a <li>
-    // give that <li> content
-    // append the <li> to the <ul>
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total customers at Sea-Tac Airport	: ' + this.dailyCustomersTotal;
-    ulElement.appendChild(liElement);
-
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total cups sold at Sea-Tac Airport	: ' + this.dailyCupsTotal.toFixed(1);
-    ulElement.appendChild(liElement);
-
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total pound packages sold at Sea-Tac Airport	: ' + this.dailyPoundPackagesTotal.toFixed(1);
-    ulElement.appendChild(liElement);
-
-    var liElement = document.createElement('li');
-    liElement.textContent = 'Total pounds of beans needed at Sea-Tac Airport	: ' + this.dailyBeansNeeded.toFixed(1);
-    ulElement.appendChild(liElement);
+kiosk.prototype.calcBeansNeededForCupsPerHour = function() {
+  for (var i = 0; i < hours.length; i ++) {
+    var beanHour = this.cupsPerHour[i] / 16;
+    beanHour = parseFloat(beanHour.toFixed(1));
+    this.beansNeededForCupsPerHour.push(beanHour);
+    this.dailyBeansNeededForCup += beanHour;
   }
+  console.log('beansNeededForCupsPerHour=' + this.beansNeededForCupsPerHour);
+  console.log('dailyBeansNeededForCup=' + this.dailyBeansNeededForCup);
 };
-seaTacAirport.render();
+kiosk.prototype.calcTotalBeansPerHour = function() {
+  for (var i = 0; i < hours.length; i ++) {
+    var tBeanHour = this.poundPackagesPerHour[i] + this.beansNeededForCupsPerHour[i];
+    tBeanHour = parseFloat(tBeanHour.toFixed(1));
+    this.totalBeansPerHour.push(tBeanHour);
+    this.dailyBeansNeeded += tBeanHour;
+  }
+  console.log('totalBeansPerHour=' + this.totalBeansPerHour);
+  console.log('dailyBeansNeeded=' + this.dailyBeansNeeded);
+};
+//total number of cups,  total number of beans-by-the-pound sold per hour and then divide accordingly.
+kiosk.prototype.calcEmpPerHour = function() {
+  for (var i = 0; i < hours.length; i ++) {
+    var emp = (this.cupsPerHour[i] + this.poundPackagesPerHour[i]) * 2 / 60;
+    emp = Math.ceil(emp);
+    this.empPerHour.push(emp);
+    this.dailyEmpHourTotal += emp;
+  }
+  console.log('empPerHour=' + this.empPerHour);
+  console.log('dailyEmpHourTotal=' + this.dailyEmpHourTotal);
+};
+kiosk.prototype.renderCalculate = function() {
+  // call all of the other methods that calc data
+  this.calcCustomersPerHour(this.minCustomersHour, this.maxCustomersHour);
+  this.calcCupsPerHour();
+  this.calcPoundPackagesPerHour();
+  this.calcBeansNeededForCupsPerHour();
+  this.calcTotalBeansPerHour();
+  this.calcEmpPerHour();
+};
+//create instance new object
+var pikePlace = new kiosk('Pike Place Market', 14, 35, 1.2, 0.34);
+var capitolHill = new kiosk('Capitol Hill', 12, 28, 3.2, 0.03);
+var seattlePublicLibrary = new kiosk('Seattle Public Library', 9, 45, 2.6, 0.02);
+var southLakeUnion = new kiosk('South Lake Union', 5, 18, 1.3, 0.04);
+var seaTacAirport = new kiosk('Sea-Tac Airport', 28, 44, 1.1, 0.41);
+
+function calcAllTotalBeanPerHour() {
+  for(var i = 0; i < hours.length; i++) {
+    var allBean = 0;
+    for(var j = 0; j < allKiosk.length; j++) {
+      allBean += allKiosk[j].totalBeansPerHour[i];
+    }
+    allTotalbeanPerHour.push(Math.floor(allBean));
+    allTotalbean += Math.floor(allBean);
+  }
+  console.log('allTotalbeanPerHour = ' + allTotalbeanPerHour);
+  console.log('allTotalbean = ' + allTotalbean);
+};
+
+var beanTable = document.getElementById('beans-table');
+var baristaTable = document.getElementById('baristas-table');
+
+function headerRow(table, arrayHeadings) {
+  //blank head cell
+  var trElement = document.createElement('tr');
+  var emptyCell = document.createElement('th');
+  emptyCell.textContent = '';
+  trElement.appendChild(emptyCell);
+  //Daily Location Total cell
+  var dailyTotalCell = document.createElement('th');
+  dailyTotalCell.textContent = 'Daily Location Total';
+  trElement.appendChild(dailyTotalCell);
+  //loop for input hours in headerRow
+  for (var i = 0; i < arrayHeadings.length; i++) {
+    var thElement = document.createElement('th');
+    thElement.textContent = arrayHeadings[i];
+    trElement.appendChild(thElement);
+  }
+  table.appendChild(trElement);
+};
+
+function totalRow(table, arrayTotals) {
+  // total head cell
+  var trElement = document.createElement('tr');
+  var totalCell = document.createElement('th');
+  totalCell.textContent = 'Totals';
+  trElement.appendChild(totalCell);
+  //Total cell
+  var totalNum = document.createElement('th');
+  totalNum.textContent = allTotalbean;
+  trElement.appendChild(totalNum);
+  //loop for input hours in headerRow
+  for (var i = 0; i < arrayTotals.length; i++) {
+    var thElement = document.createElement('th');
+    thElement.textContent = arrayTotals[i];
+    trElement.appendChild(thElement);
+  }
+  table.appendChild(trElement);
+};
+// creating funcation to output all kiosk info in loop
+// creating funcation to calcuate totalEmpHr
+
+pikePlace.renderCalculate();
+capitolHill.renderCalculate();
+seattlePublicLibrary.renderCalculate();
+southLakeUnion.renderCalculate();
+seaTacAirport.renderCalculate();
+calcAllTotalBeanPerHour();
+headerRow(beanTable, hours);
+totalRow(beanTable, allTotalbeanPerHour);
+
+headerRow(baristaTable, hours);
+// testing only!!!
+totalRow(baristaTable, allTotalbeanPerHour);
