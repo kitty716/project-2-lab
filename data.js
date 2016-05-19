@@ -10,6 +10,13 @@ var baristaTable = document.getElementById('baristas-table');
 var newKioskForm = document.getElementById('newKiosk');
 var clearInputBut = document.getElementById('clearInput');
 
+//create instance new object
+var pikePlace = new Kiosk('Pike Place Market', 14, 35, 1.2, 0.34);
+var capitolHill = new Kiosk('Capitol Hill', 12, 28, 3.2, 0.03);
+var seattlePublicLibrary = new Kiosk('Seattle Public Library', 9, 45, 2.6, 0.02);
+var southLakeUnion = new Kiosk('South Lake Union', 5, 18, 1.3, 0.04);
+var seaTacAirport = new Kiosk('Sea-Tac Airport', 28, 44, 1.1, 0.41);
+
 function Kiosk(location, minCusHr, maxCusHr, avgCupPerCus, avgPoundPerCus){
   this.localName = location;
   this.minCustomersHour = minCusHr;
@@ -131,12 +138,6 @@ Kiosk.prototype.renderBaristas = function () {
   }
   baristaTable.appendChild(trElement);
 };
-//create instance new object
-var pikePlace = new Kiosk('Pike Place Market', 14, 35, 1.2, 0.34);
-var capitolHill = new Kiosk('Capitol Hill', 12, 28, 3.2, 0.03);
-var seattlePublicLibrary = new Kiosk('Seattle Public Library', 9, 45, 2.6, 0.02);
-var southLakeUnion = new Kiosk('South Lake Union', 5, 18, 1.3, 0.04);
-var seaTacAirport = new Kiosk('Sea-Tac Airport', 28, 44, 1.1, 0.41);
 
 function calcAllTotalBeanPerHour() {
   for(var i = 0; i < hours.length; i++) {
@@ -212,7 +213,7 @@ function handleNewKioskSubmit(event) {
 
   var newKiosk = new Kiosk(hLocation, hminCusHr, hMaxCusHr, hAvgCupPerCus, hAvgPoundPerCus);
   console.log(newKiosk);
-  //allKiosk.push(newKiosk);
+  //allKiosk.push(newKiosk); already done in Object constructor
   event.target.hLocation.value = null;
   event.target.hMinCusHr.value = null;
   event.target.hMaxCusHr.value = null;
@@ -223,7 +224,7 @@ function handleNewKioskSubmit(event) {
   for (var i = 0; i < allKiosk.length; i++) {
     allKiosk[i].renderCalculate();
   }
-  //clear total and array for totalRow
+  //clear total and array for totalRow for newKiosk
   allTotalbeanPerHour = [];
   allTotalbean = 0;
   allTotalEmpPerHour = [];
@@ -231,7 +232,6 @@ function handleNewKioskSubmit(event) {
   calcAllTotalBeanPerHour();
   calcAllTotalEmpPerHour();
   //output table
-  //[tableElement].innerHTML = '';
   beanTable.innerHTML = '';
   baristaTable.innerHTML = '';
 
