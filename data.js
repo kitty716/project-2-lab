@@ -103,12 +103,12 @@ kiosk.prototype.renderBean = function() {
   thLocation.textContent = this.localName;
   trElement.appendChild(thLocation);
   var thTotalPerLocation = document.createElement('th');
-  thTotalPerLocation.textContent = Math.round(allKiosk[i].dailyBeansNeeded);
+  thTotalPerLocation.textContent = Math.round(this.dailyBeansNeeded);
   trElement.appendChild(thTotalPerLocation);
 
   for(var j = 0; j < hours.length; j++) {
     var thElement = document.createElement('th');
-    thElement.textContent = Math.round(allKiosk[i].totalBeansPerHour[j]);
+    thElement.textContent = Math.round(this.totalBeansPerHour[j]);
     trElement.appendChild(thElement);
   }
   beanTable.appendChild(trElement);
@@ -119,12 +119,12 @@ kiosk.prototype.renderBaristas = function () {
   thLocation.textContent = this.localName;
   trElement.appendChild(thLocation);
   var thTotalPerLocation = document.createElement('th');
-  thTotalPerLocation.textContent = Math.round(allKiosk[i].dailyEmpHourTotal);
+  thTotalPerLocation.textContent = Math.round(this.dailyEmpHourTotal);
   trElement.appendChild(thTotalPerLocation);
 
   for(var j = 0; j < hours.length; j++) {
     var thElement = document.createElement('th');
-    thElement.textContent = Math.round(allKiosk[i].empPerHour[j]);
+    thElement.textContent = Math.round(this.empPerHour[j]);
     trElement.appendChild(thElement);
   }
   baristaTable.appendChild(trElement);
