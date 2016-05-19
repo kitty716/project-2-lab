@@ -7,6 +7,32 @@
   </head>
 
   <body>
+    <h1>***Please enter new kiosk information***</h1>
+
+    <form id="newKiosk">
+        <fieldset>
+          <legend>New Kiosk Submission Form</legend>
+
+          <label for="hLocation">location: </label>
+          <input name="hLocation" type="text" required/>
+
+          <label for="hMinCusHr">Min Customers per Hour: </label>
+          <input name="hMinCusHr" type="number" required/>
+
+          <label for="hMaxCusHr">Max Customers per Hour: </label>
+          <input name="hMaxCusHr" type="number" required/>
+
+          <label for="hAvgCupPerCus">Average Cups per Customer: </label>
+          <input name="hAvgCupPerCus" type="number" required/>
+
+          <label for="hAvgPoundPerCus">Average Pounds per Customer: </label>
+          <input name="hAvgPoundPerCus" type="number" required/>
+
+          <button type="submit">Create New Kiosk</button>
+
+        </fieldset>
+      </form>
+
     <h1>Beans Needed By Location Each Day</h1>
     <table id="beans-table"></table>
 
