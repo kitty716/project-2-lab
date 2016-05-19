@@ -1,0 +1,9 @@
+th {
+	color: black;
+	background-color: orange;
+	border-bottom: 2px solid pink;
+	border-right: 1px solid pink;
+	border-top: 1px solid pink;
+	text-align: center;
+	letter-spacing: 0.15em;
+}
