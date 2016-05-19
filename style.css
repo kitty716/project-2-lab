@@ -1,5 +1,35 @@
+label {
+  display: block;
+}
+
+input {
+  display: block;
+  border: 2px solid grey;
+  border-radius: 8px;
+  padding: 5px 5px 5px 5px;
+  margin: 18px;
+}
+
+fieldset {
+  max-width: 588px;
+  border: 18px solid brown;
+  border-radius: 28px;
+  padding: 28px;
+  //text-align: center;
+}
+
+legend {
+  background-color: grey;
+  border: 1px solid white;
+  border-radius: 18px;
+  color: white;
+  padding: 8px 38px;
+  text-align: center;;
+  text-transform: uppercase;
+}
+
 th {
-	color: black;
+  color: black;
 	background-color: orange;
 	border-bottom: 2px solid pink;
 	border-right: 1px solid pink;

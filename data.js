@@ -7,8 +7,17 @@ var allTotalEmpPerHour = [];
 var allTotalEmp = 0;
 var beanTable = document.getElementById('beans-table');
 var baristaTable = document.getElementById('baristas-table');
+var newKioskForm = document.getElementById('newKiosk');
+var clearInputBut = document.getElementById('clearInput');
 
-function kiosk(location, minCusHr, maxCusHr, avgCupPerCus, avgPoundPerCus){
+//create instance new object
+var pikePlace = new Kiosk('Pike Place Market', 14, 35, 1.2, 0.34);
+var capitolHill = new Kiosk('Capitol Hill', 12, 28, 3.2, 0.03);
+var seattlePublicLibrary = new Kiosk('Seattle Public Library', 9, 45, 2.6, 0.02);
+var southLakeUnion = new Kiosk('South Lake Union', 5, 18, 1.3, 0.04);
+var seaTacAirport = new Kiosk('Sea-Tac Airport', 28, 44, 1.1, 0.41);
+
+function Kiosk(location, minCusHr, maxCusHr, avgCupPerCus, avgPoundPerCus){
   this.localName = location;
   this.minCustomersHour = minCusHr;
   this.maxCustomersHour = maxCusHr;
@@ -29,7 +38,7 @@ function kiosk(location, minCusHr, maxCusHr, avgCupPerCus, avgPoundPerCus){
   allKiosk.push(this);
   console.log(this);
 };
-kiosk.prototype.calcCustomersPerHour = function(min,max) {
+Kiosk.prototype.calcCustomersPerHour = function(min,max) {
   for (var i = 0; i < hours.length; i ++) {
     var customers = Math.floor(Math.random() * (max - min + 1)) + min;
     this.customersPerHour.push(customers);
@@ -38,7 +47,7 @@ kiosk.prototype.calcCustomersPerHour = function(min,max) {
   console.log('customersPerHour=' + this.customersPerHour);
   console.log('dailyCustomersTotal=' + this.dailyCustomersTotal);
 };
-kiosk.prototype.calcCupsPerHour = function() {
+Kiosk.prototype.calcCupsPerHour = function() {
   for (var i = 0; i < hours.length; i ++) {
     var cups = this.avgCupsPerCustomer * this.customersPerHour[i];
     cups = parseFloat(cups.toFixed(1));
@@ -48,7 +57,7 @@ kiosk.prototype.calcCupsPerHour = function() {
   console.log('cupsPerHour=' + this.cupsPerHour);
   console.log('dailyCupsTotal=' + this.dailyCupsTotal);
 };
-kiosk.prototype.calcPoundPackagesPerHour = function() {
+Kiosk.prototype.calcPoundPackagesPerHour = function() {
   for (var i = 0; i < hours.length; i ++) {
     var pounds = this.avgPoundsPerCustomer * this.customersPerHour[i];
     pounds = parseFloat(pounds.toFixed(1));
@@ -58,7 +67,7 @@ kiosk.prototype.calcPoundPackagesPerHour = function() {
   console.log('poundPackagesPerHour=' + this.poundPackagesPerHour);
   console.log('dailyPoundPackagesTotal=' + this.dailyPoundPackagesTotal);
 };
-kiosk.prototype.calcBeansNeededForCupsPerHour = function() {
+Kiosk.prototype.calcBeansNeededForCupsPerHour = function() {
   for (var i = 0; i < hours.length; i ++) {
     var beanHour = this.cupsPerHour[i] / 16;
     beanHour = parseFloat(beanHour.toFixed(1));
@@ -68,7 +77,7 @@ kiosk.prototype.calcBeansNeededForCupsPerHour = function() {
   console.log('beansNeededForCupsPerHour=' + this.beansNeededForCupsPerHour);
   console.log('dailyBeansNeededForCup=' + this.dailyBeansNeededForCup);
 };
-kiosk.prototype.calcTotalBeansPerHour = function() {
+Kiosk.prototype.calcTotalBeansPerHour = function() {
   for (var i = 0; i < hours.length; i ++) {
     var tBeanHour = this.poundPackagesPerHour[i] + this.beansNeededForCupsPerHour[i];
     tBeanHour = parseFloat(tBeanHour.toFixed(1));
@@ -78,7 +87,7 @@ kiosk.prototype.calcTotalBeansPerHour = function() {
   console.log('totalBeansPerHour=' + this.totalBeansPerHour);
   console.log('dailyBeansNeeded=' + this.dailyBeansNeeded);
 };
-kiosk.prototype.calcEmpPerHour = function() {
+Kiosk.prototype.calcEmpPerHour = function() {
   for (var i = 0; i < hours.length; i ++) {
     var emp = (this.cupsPerHour[i] + this.poundPackagesPerHour[i]) * 2 / 60;
     emp = Math.ceil(emp);
@@ -88,7 +97,7 @@ kiosk.prototype.calcEmpPerHour = function() {
   console.log('empPerHour=' + this.empPerHour);
   console.log('dailyEmpHourTotal=' + this.dailyEmpHourTotal);
 };
-kiosk.prototype.renderCalculate = function() {
+Kiosk.prototype.renderCalculate = function() {
   // call all of the other methods that calc data
   this.calcCustomersPerHour(this.minCustomersHour, this.maxCustomersHour);
   this.calcCupsPerHour();
@@ -97,7 +106,7 @@ kiosk.prototype.renderCalculate = function() {
   this.calcTotalBeansPerHour();
   this.calcEmpPerHour();
 };
-kiosk.prototype.renderBean = function() {
+Kiosk.prototype.renderBean = function() {
   var trElement = document.createElement('tr');
   var thLocation = document.createElement('th');
   thLocation.textContent = this.localName;
@@ -113,7 +122,7 @@ kiosk.prototype.renderBean = function() {
   }
   beanTable.appendChild(trElement);
 };
-kiosk.prototype.renderBaristas = function () {
+Kiosk.prototype.renderBaristas = function () {
   var trElement = document.createElement('tr');
   var thLocation = document.createElement('th');
   thLocation.textContent = this.localName;
@@ -129,12 +138,6 @@ kiosk.prototype.renderBaristas = function () {
   }
   baristaTable.appendChild(trElement);
 };
-//create instance new object
-var pikePlace = new kiosk('Pike Place Market', 14, 35, 1.2, 0.34);
-var capitolHill = new kiosk('Capitol Hill', 12, 28, 3.2, 0.03);
-var seattlePublicLibrary = new kiosk('Seattle Public Library', 9, 45, 2.6, 0.02);
-var southLakeUnion = new kiosk('South Lake Union', 5, 18, 1.3, 0.04);
-var seaTacAirport = new kiosk('Sea-Tac Airport', 28, 44, 1.1, 0.41);
 
 function calcAllTotalBeanPerHour() {
   for(var i = 0; i < hours.length; i++) {
@@ -199,21 +202,48 @@ function totalRow(table, arrayTotals, dailyTotal) {
   }
   table.appendChild(trElement);
 };
-//calcuate all data
-for (var i = 0; i < allKiosk.length; i++) {
-  allKiosk[i].renderCalculate();
-}
-calcAllTotalBeanPerHour();
-calcAllTotalEmpPerHour();
-//output table
-headerRow(beanTable, hours);
-for (var i = 0; i < allKiosk.length; i++) {
-  allKiosk[i].renderBean();
-}
-totalRow(beanTable, allTotalbeanPerHour, allTotalbean);
+function handleNewKioskSubmit(event) {
+  //console.log(event);
+  event.preventDefault(); //prevents page reload
+  var hLocation = event.target.hLocation.value;
+  var hminCusHr = parseFloat(event.target.hMinCusHr.value);
+  var hMaxCusHr = parseFloat(event.target.hMaxCusHr.value);
+  var hAvgCupPerCus = parseFloat(event.target.hAvgCupPerCus.value);
+  var hAvgPoundPerCus = parseFloat(event.target.hAvgPoundPerCus.value);
 
-headerRow(baristaTable, hours);
-for (var i = 0; i < allKiosk.length; i++) {
-  allKiosk[i].renderBaristas();
+  var newKiosk = new Kiosk(hLocation, hminCusHr, hMaxCusHr, hAvgCupPerCus, hAvgPoundPerCus);
+  console.log(newKiosk);
+  //allKiosk.push(newKiosk); already done in Object constructor
+  event.target.hLocation.value = null;
+  event.target.hMinCusHr.value = null;
+  event.target.hMaxCusHr.value = null;
+  event.target.hAvgCupPerCus.value = null;
+  event.target.hAvgPoundPerCus.value = null;
+  console.log('You just cleared all the fields!');
+  //calcuate all data
+  for (var i = 0; i < allKiosk.length; i++) {
+    allKiosk[i].renderCalculate();
+  }
+  //clear total and array for totalRow for newKiosk
+  allTotalbeanPerHour = [];
+  allTotalbean = 0;
+  allTotalEmpPerHour = [];
+  allTotalEmp = 0;
+  calcAllTotalBeanPerHour();
+  calcAllTotalEmpPerHour();
+  //output table
+  beanTable.innerHTML = '';
+  baristaTable.innerHTML = '';
+
+  headerRow(beanTable, hours);
+  for (var i = 0; i < allKiosk.length; i++) {
+    allKiosk[i].renderBean();
+  }
+  totalRow(beanTable, allTotalbeanPerHour, allTotalbean);
+  headerRow(baristaTable, hours);
+  for (var i = 0; i < allKiosk.length; i++) {
+    allKiosk[i].renderBaristas();
+  }
+  totalRow(baristaTable, allTotalEmpPerHour, allTotalEmp);
 }
-totalRow(baristaTable, allTotalEmpPerHour, allTotalEmp);
+newKioskForm.addEventListener('submit', handleNewKioskSubmit);
