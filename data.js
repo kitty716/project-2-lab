@@ -109,9 +109,9 @@ Kiosk.prototype.renderBean = function() {
   trElement.appendChild(thTotalPerLocation);
 
   for(var j = 0; j < hours.length; j++) {
-    var thElement = document.createElement('th');
-    thElement.textContent = Math.round(this.totalBeansPerHour[j]);
-    trElement.appendChild(thElement);
+    var tdElement = document.createElement('td');
+    tdElement.textContent = Math.round(this.totalBeansPerHour[j]);
+    trElement.appendChild(tdElement);
   }
   beanTable.appendChild(trElement);
 };
@@ -125,9 +125,9 @@ Kiosk.prototype.renderBaristas = function () {
   trElement.appendChild(thTotalPerLocation);
 
   for(var j = 0; j < hours.length; j++) {
-    var thElement = document.createElement('th');
-    thElement.textContent = Math.round(this.empPerHour[j]);
-    trElement.appendChild(thElement);
+    var tdElement = document.createElement('td');
+    tdElement.textContent = Math.round(this.empPerHour[j]);
+    trElement.appendChild(tdElement);
   }
   baristaTable.appendChild(trElement);
 };
@@ -195,9 +195,9 @@ function totalRow(table, arrayTotals, dailyTotal) {
   trElement.appendChild(totalNum);
   //loop for input total in totalRow
   for (var i = 0; i < arrayTotals.length; i++) {
-    var thElement = document.createElement('th');
-    thElement.textContent = arrayTotals[i];
-    trElement.appendChild(thElement);
+    var tdElement = document.createElement('td');
+    tdElement.textContent = arrayTotals[i];
+    trElement.appendChild(tdElement);
   }
   table.appendChild(trElement);
 };
