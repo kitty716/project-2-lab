@@ -10,13 +10,6 @@ var baristaTable = document.getElementById('baristas-table');
 var newKioskForm = document.getElementById('newKiosk');
 var clearInputBut = document.getElementById('clearInput');
 
-//create instance new object
-var pikePlace = new Kiosk('Pike Place Market', 14, 35, 1.2, 0.34);
-var capitolHill = new Kiosk('Capitol Hill', 12, 28, 3.2, 0.03);
-var seattlePublicLibrary = new Kiosk('Seattle Public Library', 9, 45, 2.6, 0.02);
-var southLakeUnion = new Kiosk('South Lake Union', 5, 18, 1.3, 0.04);
-var seaTacAirport = new Kiosk('Sea-Tac Airport', 28, 44, 1.1, 0.41);
-
 function Kiosk(location, minCusHr, maxCusHr, avgCupPerCus, avgPoundPerCus){
   this.localName = location;
   this.minCustomersHour = minCusHr;
@@ -97,7 +90,7 @@ Kiosk.prototype.calcEmpPerHour = function() {
   console.log('empPerHour=' + this.empPerHour);
   console.log('dailyEmpHourTotal=' + this.dailyEmpHourTotal);
 };
-Kiosk.prototype.renderCalculate = function() {
+Kiosk.prototype.calculateData = function() {
   // call all of the other methods that calc data
   this.calcCustomersPerHour(this.minCustomersHour, this.maxCustomersHour);
   this.calcCupsPerHour();
@@ -138,6 +131,12 @@ Kiosk.prototype.renderBaristas = function () {
   }
   baristaTable.appendChild(trElement);
 };
+//create instance new object
+var pikePlace = new Kiosk('Pike Place Market', 14, 35, 1.2, 0.34);
+var capitolHill = new Kiosk('Capitol Hill', 12, 28, 3.2, 0.03);
+var seattlePublicLibrary = new Kiosk('Seattle Public Library', 9, 45, 2.6, 0.02);
+var southLakeUnion = new Kiosk('South Lake Union', 5, 18, 1.3, 0.04);
+var seaTacAirport = new Kiosk('Sea-Tac Airport', 28, 44, 1.1, 0.41);
 
 function calcAllTotalBeanPerHour() {
   for(var i = 0; i < hours.length; i++) {
@@ -202,28 +201,7 @@ function totalRow(table, arrayTotals, dailyTotal) {
   }
   table.appendChild(trElement);
 };
-function handleNewKioskSubmit(event) {
-  //console.log(event);
-  event.preventDefault(); //prevents page reload
-  var hLocation = event.target.hLocation.value;
-  var hminCusHr = parseFloat(event.target.hMinCusHr.value);
-  var hMaxCusHr = parseFloat(event.target.hMaxCusHr.value);
-  var hAvgCupPerCus = parseFloat(event.target.hAvgCupPerCus.value);
-  var hAvgPoundPerCus = parseFloat(event.target.hAvgPoundPerCus.value);
-
-  var newKiosk = new Kiosk(hLocation, hminCusHr, hMaxCusHr, hAvgCupPerCus, hAvgPoundPerCus);
-  console.log(newKiosk);
-  //allKiosk.push(newKiosk); already done in Object constructor
-  event.target.hLocation.value = null;
-  event.target.hMinCusHr.value = null;
-  event.target.hMaxCusHr.value = null;
-  event.target.hAvgCupPerCus.value = null;
-  event.target.hAvgPoundPerCus.value = null;
-  console.log('You just cleared all the fields!');
-  //calcuate all data
-  for (var i = 0; i < allKiosk.length; i++) {
-    allKiosk[i].renderCalculate();
-  }
+function outputTable() {
   //clear total and array for totalRow for newKiosk
   allTotalbeanPerHour = [];
   allTotalbean = 0;
@@ -234,16 +212,39 @@ function handleNewKioskSubmit(event) {
   //output table
   beanTable.innerHTML = '';
   baristaTable.innerHTML = '';
-
   headerRow(beanTable, hours);
-  for (var i = 0; i < allKiosk.length; i++) {
-    allKiosk[i].renderBean();
-  }
-  totalRow(beanTable, allTotalbeanPerHour, allTotalbean);
   headerRow(baristaTable, hours);
   for (var i = 0; i < allKiosk.length; i++) {
+    allKiosk[i].renderBean();
     allKiosk[i].renderBaristas();
   }
+  totalRow(beanTable, allTotalbeanPerHour, allTotalbean);
   totalRow(baristaTable, allTotalEmpPerHour, allTotalEmp);
 }
+function handleNewKioskSubmit(event) {
+  //console.log(event);
+  event.preventDefault(); //prevents page reload
+  var hLocation = event.target.hLocation.value;
+  var hminCusHr = parseFloat(event.target.hMinCusHr.value);
+  var hMaxCusHr = parseFloat(event.target.hMaxCusHr.value);
+  var hAvgCupPerCus = parseFloat(event.target.hAvgCupPerCus.value);
+  var hAvgPoundPerCus = parseFloat(event.target.hAvgPoundPerCus.value);
+
+  var newKiosk = new Kiosk(hLocation, hminCusHr, hMaxCusHr, hAvgCupPerCus, hAvgPoundPerCus);
+  newKiosk.calculateData();
+  console.log(newKiosk);
+  //allKiosk.push(newKiosk); already done in Object constructor
+  event.target.hLocation.value = null;
+  event.target.hMinCusHr.value = null;
+  event.target.hMaxCusHr.value = null;
+  event.target.hAvgCupPerCus.value = null;
+  event.target.hAvgPoundPerCus.value = null;
+  console.log('You just cleared all the fields!');
+  outputTable();
+}
+//calcuate all data
+for (var i = 0; i < allKiosk.length; i++) {
+  allKiosk[i].calculateData();
+}
+outputTable();
 newKioskForm.addEventListener('submit', handleNewKioskSubmit);
