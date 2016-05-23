@@ -1,3 +1,3 @@
 # project-2-lab
-Branch=== lab05192016, Class9 Assignment,
+Branch=== cc-05-20, Class10 Assignment,
 Campfire Coffee - Lab Project for Week 2
